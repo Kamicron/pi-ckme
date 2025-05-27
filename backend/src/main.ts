@@ -20,6 +20,13 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   // Configuration du port
-  await app.listen(process.env.PORT || 5001);
+  const port = process.env.PORT || 5001;
+  await app.listen(port);
+  
+  // Affichage des informations du serveur
+  const server = app.getHttpServer();
+  const { address, port: serverPort } = server.address();
+  console.log(`\n\x1b[32m✓ Serveur démarré avec succès !\x1b[0m`);
+  console.log(`\x1b[36m➜ Serveur accessible à l'adresse: \x1b[33mhttp://${address === '::' ? 'localhost' : address}:${serverPort}\x1b[0m\n`);
 }
 bootstrap();

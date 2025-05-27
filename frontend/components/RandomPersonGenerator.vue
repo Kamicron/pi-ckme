@@ -1,5 +1,33 @@
 <template>
   <div class="card">
+    <div class="filter-section">
+      <h3>Filtres</h3>
+      <div class="filter-row">
+        <div class="filter-label">Genre:</div>
+        <div class="filter-value">
+          <Dropdown v-model="selectedGender" :options="genderOptions" optionLabel="label" 
+            optionValue="value" placeholder="Aléatoire" class="w-full" />
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-label">Nationalité:</div>
+        <div class="filter-value">
+          <Dropdown v-model="selectedNationality" :options="nationalityOptions" optionLabel="label" 
+            optionValue="value" placeholder="Aléatoire" class="w-full" @change="onNationalityChange" />
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-label">Ethnicité:</div>
+        <div class="filter-value">
+          <Dropdown v-model="selectedEthnicity" :options="ethnicityOptions" optionLabel="label" 
+            optionValue="value" placeholder="Aléatoire" class="w-full" />
+        </div>
+      </div>
+      <div class="filter-actions">
+        <Button label="Générer une personne" icon="pi pi-refresh" @click="generatePerson" :loading="loading" />
+      </div>
+    </div>
+    
     <div class="person-details" v-if="person">
       <div class="person-header">
         <div class="person-photo">
@@ -46,9 +74,6 @@
     <div v-else-if="error" class="error-state">
       {{ error }}
     </div>
-    <div class="mb-3">
-      <Button label="Générer une personne" icon="pi pi-refresh" @click="generatePerson" :loading="loading" />
-    </div>
   </div>
 </template>
 
@@ -67,6 +92,50 @@ const person = ref<Person | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+// Filtres
+const selectedGender = ref<string | null>(null);
+const selectedNationality = ref<string | null>(null);
+const selectedEthnicity = ref<string | null>(null);
+
+// Options pour les filtres
+const genderOptions = [
+  { label: 'Homme', value: 'male' },
+  { label: 'Femme', value: 'female' }
+];
+
+const nationalityOptions = ref<Array<{ label: string, value: string }>>([]);
+const ethnicityOptions = ref<Array<{ label: string, value: string }>>([]);
+
+// Charger les options de nationalité et d'ethnicité au démarrage
+onMounted(async () => {
+  try {
+    // Charger les nationalités
+    const nationalitiesResponse = await fetch('http://localhost:5001/nationalities');
+    const nationalities = await nationalitiesResponse.json();
+    nationalityOptions.value = nationalities.map((nat: any) => ({
+      label: nat.nameFr,
+      value: nat.id
+    }));
+    
+    // Charger toutes les ethnicités disponibles
+    const ethnicitiesResponse = await fetch('http://localhost:5001/ethnicities');
+    const ethnicities = await ethnicitiesResponse.json();
+    ethnicityOptions.value = ethnicities.map((eth: any) => ({
+      label: eth.nameFr,
+      value: eth.id
+    }));
+  } catch (e) {
+    console.error('Erreur lors du chargement des données:', e);
+  }
+});
+
+// Fonction appelée lorsque la nationalité change (ne modifie plus les ethnicités disponibles)
+async function onNationalityChange() {
+  // Cette fonction ne fait plus rien de spécial puisque nous voulons permettre
+  // la sélection de n'importe quelle ethnicité indépendamment de la nationalité
+  // Nous la gardons au cas où nous voudrions ajouter une logique supplémentaire plus tard
+}
+
 const genderIcon = computed(() => {
   return person.value?.gender === 'male' ? 'pi pi-user' : 'pi pi-user-edit';
 });
@@ -84,7 +153,29 @@ async function generatePerson() {
     loading.value = true;
     error.value = null;
     
-    const response = await fetch('http://localhost:5001/names/random-person');
+    // Construire l'URL avec les paramètres de filtre
+    let url = 'http://localhost:5001/names/random-person';
+    const params = new URLSearchParams();
+    
+    if (selectedGender.value) {
+      params.append('gender', selectedGender.value);
+    }
+    
+    if (selectedNationality.value) {
+      params.append('nationalityId', selectedNationality.value);
+    }
+    
+    if (selectedEthnicity.value) {
+      params.append('ethnicityId', selectedEthnicity.value);
+    }
+    
+    // Ajouter les paramètres à l'URL si nécessaire
+    const queryString = params.toString();
+    if (queryString) {
+      url += `?${queryString}`;
+    }
+    
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error('Erreur lors de la génération de la personne');
     }
@@ -106,6 +197,41 @@ async function generatePerson() {
   background: var(--surface-card);
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
+}
+
+.filter-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.filter-section h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  width: 120px;
+}
+
+.filter-value {
+  flex: 1;
+}
+
+.filter-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .person-details {

@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { Nationality } from './entities/nationality.entity';
 import { NationalityEthnicityDistribution } from './entities/nationality-ethnicity-distribution.entity';
 import { NationalityWithDistribution } from './interfaces/nationality-with-distribution.interface';
+import { EthnicityService } from '../ethnicity/ethnicity.service';
+import { Ethnicity } from '../ethnicity/entities/ethnicity.entity';
 
 @Injectable()
 export class NationalityService {
@@ -12,6 +14,7 @@ export class NationalityService {
     private readonly nationalityRepository: Repository<Nationality>,
     @InjectRepository(NationalityEthnicityDistribution)
     private readonly distributionRepository: Repository<NationalityEthnicityDistribution>,
+    private readonly ethnicityService: EthnicityService,
   ) {}
 
   async findAll(): Promise<Nationality[]> {
@@ -20,6 +23,10 @@ export class NationalityService {
         nameFr: 'ASC'
       }
     });
+  }
+
+  async findAllEthnicities(): Promise<Ethnicity[]> {
+    return this.ethnicityService.findAll();
   }
 
   async getEthnicityDistribution(nationalityId?: string): Promise<NationalityWithDistribution[]> {

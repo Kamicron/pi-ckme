@@ -25,7 +25,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { name, emails, photos, id } = profile;
-    
+
     const user = await this.usersService.createOrUpdateUser({
       email: emails[0].value,
       firstName: name.givenName,
