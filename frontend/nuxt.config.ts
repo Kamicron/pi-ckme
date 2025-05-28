@@ -21,6 +21,11 @@ export default defineNuxtConfig({
       ]
     }
   },
+  
+  // Import des styles CSS globaux
+  css: [
+    '@/assets/css/dark-theme.css'
+  ],
 
   modules: [
     '@primevue/nuxt-module'

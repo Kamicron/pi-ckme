@@ -1,7 +1,10 @@
 <template>
   <div class="settings-container">
-    <SpeedDial :model="items" :radius="100" buttonClass="p-button-rounded settings-trigger"
-      :buttonStyle="buttonStyle" showIcon="pi pi-cog" hideIcon="pi pi-times" type="quarter-circle" direction="down-left" />
+    <SpeedDial class="test" :model="items" :radius="100" buttonClass="p-button-rounded settings-trigger"
+      :buttonStyle="buttonStyle" showIcon="pi pi-cog" hideIcon="pi pi-times" type="quarter-circle" direction="down-left"
+      :pt="{
+        root: { style: 'border-radius: 100%; display:block' },
+      }" />
 
     <!-- Color Picker Popup -->
     <div v-if="showColorPicker" class="color-picker-popup" :style="colorPickerPosition">
@@ -105,6 +108,11 @@ const items = computed<MenuItem[]>(() => [
   z-index: 1000;
 }
 
+.p-speeddial.p-component.p-speeddial-quarter-circle.p-speeddial-direction-down-left.test {
+  display: block !important;
+  border-radius: 100% !important;
+}
+
 .color-picker-popup {
   position: fixed;
   padding: 0.5rem;
@@ -142,9 +150,19 @@ const items = computed<MenuItem[]>(() => [
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: none !important;
+    outline: none !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
     
     &:hover {
       transform: scale(1.05);
+    }
+    
+    &:focus,
+    &:active,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+      border: none !important;
     }
 
     .pi {

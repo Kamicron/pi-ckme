@@ -1,7 +1,5 @@
 <template>
   <div class="container">
-    <ThemeSwitch />
-
 
     <div class="grid">
       <!-- Générateur de personnes aléatoires -->

@@ -1,12 +1,12 @@
 <template>
   <Sidebar :visible="visible" @update:visible="$emit('update:visible', $event)" class="modern-sidebar" :class="{ 'dark-sidebar': isDark }" :pt="sidebarPT" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''">
-    <div class="sidebar-header">
+    <div class="sidebar-header" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''">
       <div class="logo-container">
         <h2 class="logo-text">Pi-ckme</h2>
       </div>
     </div>
 
-    <div class="sidebar-content">
+    <div class="sidebar-content" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''">
       <div v-if="user" class="user-profile-container" @click="toggleUserMenu">
         <Avatar :image="user.picture" size="large" shape="circle" />
         <div class="user-info">
@@ -21,8 +21,8 @@
 
     </div>
 
-    <div class="sidebar-footer">
-      <PanelMenu :model="menuItems" class="sidebar-menu" />
+    <div class="sidebar-footer" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''">
+      <PanelMenu :model="menuItems" class="sidebar-menu" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''"/>
 
     </div>
   </Sidebar>

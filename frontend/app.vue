@@ -2,7 +2,10 @@
   <div :class="{ 'dark-mode': isDark }">
     <div class="layout-wrapper">
       <div class="layout-menu-button">
-        <Button icon="pi pi-bars" @click="visible = true" class="menu-button glassmorphism-button" />
+        <Button icon="pi pi-bars" @click="visible = true" class="menu-button glassmorphism-button" 
+               :pt="{
+                 root: { style: 'border-radius: 100%; outline: none; border: none;' }
+               }" />
       </div>
       <div class="layout-header">
         <ThemeSwitch />
@@ -111,6 +114,16 @@ body {
   width: 3rem !important;
   height: 3rem !important;
   border-radius: 50% !important;
+  outline: none !important;
+}
+
+/* Suppression de tous les contours et bordures */
+.glassmorphism-button:focus,
+.glassmorphism-button:active,
+.glassmorphism-button:focus-visible {
+  outline: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+  border: none !important;
 }
 
 .glassmorphism-button:hover {
