@@ -1,5 +1,5 @@
 <template>
-  <Sidebar :visible="visible" @update:visible="$emit('update:visible', $event)" class="modern-sidebar" :class="{ 'dark-sidebar': isDark }" :pt="sidebarPT">
+  <Sidebar :visible="visible" @update:visible="$emit('update:visible', $event)" class="modern-sidebar" :class="{ 'dark-sidebar': isDark }" :pt="sidebarPT" :style="isDark ? 'background-color: #1e1e1e !important; color: #f8f9fa !important;' : ''">
     <div class="sidebar-header">
       <div class="logo-container">
         <h2 class="logo-text">Pi-ckme</h2>
@@ -172,15 +172,30 @@ const toggleUserMenu = (event: Event) => {
   --p-component-hover-bg: var(--surface-hover) !important;
 }
 
-.dark-sidebar :deep(.p-sidebar) {
-  background-color: var(--surface-card) !important;
+.dark-sidebar-root,
+.dark-sidebar-content,
+.dark-sidebar-header,
+.dark-sidebar-footer,
+.dark-sidebar :deep(.p-sidebar),
+.dark-sidebar :deep(.p-sidebar-content),
+.dark-sidebar :deep(.p-sidebar-header),
+.dark-sidebar :deep(.p-sidebar-footer) {
+  background-color: #1e1e1e !important;
   color: var(--text-color) !important;
   border-color: var(--surface-border) !important;
 }
 
 .dark-sidebar :deep(.p-component),
-.dark-sidebar :deep(.p-component-overlay) {
-  background-color: var(--surface-card) !important;
+.dark-sidebar :deep(.p-component-overlay),
+.dark-sidebar :deep(.p-menu),
+.dark-sidebar :deep(.p-menu-list),
+.dark-sidebar :deep(.p-menuitem),
+.dark-sidebar :deep(.p-menuitem-content),
+.dark-sidebar :deep(.p-menuitem-link),
+.dark-sidebar :deep(.p-panelmenu),
+.dark-sidebar :deep(.p-panelmenu-header),
+.dark-sidebar :deep(.p-panelmenu-content) {
+  background-color: #1e1e1e !important;
   color: var(--text-color) !important;
 }
 
