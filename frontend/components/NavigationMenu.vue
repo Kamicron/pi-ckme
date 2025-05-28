@@ -1,5 +1,5 @@
 <template>
-  <Sidebar :visible="visible" @update:visible="$emit('update:visible', $event)" class="modern-sidebar">
+  <Sidebar :visible="visible" @update:visible="$emit('update:visible', $event)" class="modern-sidebar" :class="{ 'dark-sidebar': isDark }" :pt="sidebarPT">
     <div class="sidebar-header">
       <div class="logo-container">
         <h2 class="logo-text">Pi-ckme</h2>
@@ -7,11 +7,6 @@
     </div>
 
     <div class="sidebar-content">
-      <PanelMenu :model="menuItems" class="sidebar-menu" />
-    </div>
-
-    <div class="sidebar-footer">
-      <Divider />
       <div v-if="user" class="user-profile-container" @click="toggleUserMenu">
         <Avatar :image="user.picture" size="large" shape="circle" />
         <div class="user-info">
@@ -20,16 +15,34 @@
         </div>
         <Button icon="pi pi-angle-down" text rounded class="user-menu-toggle" />
       </div>
-      <Menu v-model:popup="userMenuVisible" :model="userMenuItems" ref="userMenu" />
+      <Menu v-if="user" v-model:popup="userMenuVisible" :model="userMenuItems" ref="userMenu" />
       
-      <Button v-if="!user" label="Connexion" icon="pi pi-sign-in" class="login-button" text />
+      <Button v-if="!user" label="Connexion" icon="pi pi-sign-in" class="login-button glassmorphism-button" @click="login" />
+
+    </div>
+
+    <div class="sidebar-footer">
+      <PanelMenu :model="menuItems" class="sidebar-menu" />
+
     </div>
   </Sidebar>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRuntimeConfig } from 'nuxt/app';
+import { useTheme } from '../composables/useTheme';
 import Avatar from 'primevue/avatar';
+
+const { isDark } = useTheme();
+
+// Styles personnalisés pour le composant Sidebar
+const sidebarPT = computed(() => ({
+  root: { class: isDark.value ? 'dark-sidebar-root' : '' },
+  content: { class: isDark.value ? 'dark-sidebar-content' : '' },
+  header: { class: isDark.value ? 'dark-sidebar-header' : '' },
+  footer: { class: isDark.value ? 'dark-sidebar-footer' : '' }
+}));
 import Button from 'primevue/button';
 import Divider from 'primevue/divider';
 import Menu from 'primevue/menu';
@@ -65,17 +78,15 @@ const menuItems = [
       {
         label: 'Accueil',
         icon: 'pi pi-home',
-        to: '/'
-      },
-      {
-        label: 'Connexion',
-        icon: 'pi pi-sign-in',
-        to: '/login'
-      },
+        command: () => {
+          window.location.href = '/';
+        }      },
       {
         label: 'Test',
         icon: 'pi pi-cog',
-        to: '/test'
+        command: () => {
+          window.location.href = '/test';
+        }
       }
     ]
   },
@@ -86,7 +97,9 @@ const menuItems = [
       {
         label: 'Tableau de bord',
         icon: 'pi pi-th-large',
-        to: '/admin'
+        command: () => {
+          window.location.href = '/admin';
+        }
       }
     ]
   }
@@ -115,10 +128,24 @@ const userMenuItems = [
     label: 'Déconnexion',
     icon: 'pi pi-sign-out',
     command: () => {
-      // Déconnecter l'utilisateur
+      logout();
     }
   }
 ];
+
+// Fonction de connexion
+const config = useRuntimeConfig();
+const login = () => {
+  // Redirection vers la page d'authentification Google
+  window.location.href = `${config.public.apiBaseUrl}/auth/google`;
+};
+
+// Fonction de déconnexion
+const logout = () => {
+  localStorage.removeItem('user');
+  // Redirection vers la page d'accueil
+  window.location.href = '/';
+};
 
 // Afficher le menu utilisateur
 const toggleUserMenu = (event: Event) => {
@@ -127,14 +154,53 @@ const toggleUserMenu = (event: Event) => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 /* Styles pour le nouveau menu moderne */
 .modern-sidebar {
   max-width: 320px;
+  background-color: var(--surface-card) !important;
+  color: var(--text-color) !important;
+  border-color: var(--surface-border) !important;
+}
+
+.dark-sidebar {
+  --p-component-overlay-backdrop: rgba(0, 0, 0, 0.6) !important;
+  --p-component-overlay-color: var(--surface-card) !important;
+  --p-component-bg: var(--surface-card) !important;
+  --p-component-text-color: var(--text-color) !important;
+  --p-component-border-color: var(--surface-border) !important;
+  --p-component-hover-bg: var(--surface-hover) !important;
+}
+
+.dark-sidebar :deep(.p-sidebar) {
+  background-color: var(--surface-card) !important;
+  color: var(--text-color) !important;
+  border-color: var(--surface-border) !important;
+}
+
+.dark-sidebar :deep(.p-component),
+.dark-sidebar :deep(.p-component-overlay) {
+  background-color: var(--surface-card) !important;
+  color: var(--text-color) !important;
 }
 
 .modern-sidebar :deep(.p-sidebar-content) {
   padding: 0;
+}
+
+.modern-sidebar :deep(.p-menu) {
+  width: 200px;
+  background-color: var(--surface-card) !important;
+  color: var(--text-color) !important;
+  border-color: var(--surface-border) !important;
+}
+
+.modern-sidebar :deep(.p-menu .p-menuitem-link) {
+  color: var(--text-color);
+}
+
+.modern-sidebar :deep(.p-menu .p-menuitem-link:hover) {
+  background-color: var(--surface-hover);
 }
 
 .sidebar-header {
@@ -144,6 +210,7 @@ const toggleUserMenu = (event: Event) => {
   padding: 1rem;
   border-bottom: 1px solid var(--surface-border);
   background-color: var(--surface-card);
+  color: var(--text-color);
 }
 
 .logo-container {
@@ -178,8 +245,30 @@ const toggleUserMenu = (event: Event) => {
   background: transparent;
 }
 
+.sidebar-menu :deep(.p-panelmenu-panel) {
+  background-color: var(--surface-card);
+  color: var(--text-color);
+}
+
+.sidebar-menu :deep(.p-panelmenu-content) {
+  background-color: var(--surface-card);
+  color: var(--text-color);
+  border-color: var(--surface-border);
+}
+
 .sidebar-menu :deep(.p-panelmenu-header-link) {
   padding: 0.75rem 1rem;
+  color: var(--text-color);
+  background-color: var(--surface-card);
+}
+
+.sidebar-menu :deep(.p-menuitem-link) {
+  color: var(--text-color);
+  background-color: var(--surface-card);
+}
+
+.sidebar-menu :deep(.p-menuitem-link:hover) {
+  background-color: var(--surface-hover);
 }
 
 .sidebar-menu :deep(.p-menuitem-icon) {
@@ -196,6 +285,7 @@ const toggleUserMenu = (event: Event) => {
   padding: 1rem;
   border-top: 1px solid var(--surface-border);
   background-color: var(--surface-card);
+  color: var(--text-color);
 }
 
 .user-profile-container {
@@ -237,5 +327,24 @@ const toggleUserMenu = (event: Event) => {
   width: 100%;
   margin-top: 0.5rem;
   justify-content: flex-start;
+}
+
+.glassmorphism-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  &:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .pi {
+    font-size: 1rem;
+    color: var(--text-color);
+  }
 }
 </style>

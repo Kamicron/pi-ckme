@@ -1,12 +1,8 @@
 <template>
   <div class="home-container">
-    <div v-if="user">
-      <UserProfile :user="user" />
-      <button class="logout-button" @click="logout">Se déconnecter</button>
-    </div>
-    <div v-else>
-      <p>Vous n'êtes pas connecté</p>
-      <NuxtLink to="/login" class="login-link">Se connecter</NuxtLink>
+    <div>
+      <h1>Pick me</h1>
+      <h2 v-if="user">Bienvenue {{ user.firstName }} {{ user.lastName }}</h2>
     </div>
   </div>
 </template>

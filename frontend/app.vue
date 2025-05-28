@@ -2,7 +2,7 @@
   <div :class="{ 'dark-mode': isDark }">
     <div class="layout-wrapper">
       <div class="layout-menu-button">
-        <Button icon="pi pi-bars" @click="visible = true" class="menu-button" severity="primary" rounded />
+        <Button icon="pi pi-bars" @click="visible = true" class="menu-button glassmorphism-button" />
       </div>
       <div class="layout-header">
         <ThemeSwitch />
@@ -101,10 +101,77 @@ body {
   box-shadow: var(--card-shadow);
 }
 
+.glassmorphism-button {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1)) !important;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: none !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 3rem !important;
+  height: 3rem !important;
+  border-radius: 50% !important;
+}
+
+.glassmorphism-button:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.glassmorphism-button .pi {
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
 .dark-mode {
   background-color: var(--surface-ground);
   color: var(--text-color);
   min-height: 100vh;
+}
+
+/* Styles pour forcer le thème sombre dans les composants PrimeVue */
+:root.dark .p-sidebar,
+:root.dark .p-sidebar-content,
+:root.dark .p-sidebar-header,
+:root.dark .p-sidebar-footer,
+:root.dark .p-panelmenu,
+:root.dark .p-panelmenu-header,
+:root.dark .p-panelmenu-header-link,
+:root.dark .p-panelmenu-content,
+:root.dark .p-menu,
+:root.dark .p-menu-list,
+:root.dark .p-menuitem,
+:root.dark .p-menuitem-content,
+:root.dark .p-menuitem-link,
+:root.dark .p-component,
+:root.dark .p-component-overlay {
+  background-color: var(--surface-card) !important;
+  color: var(--text-color) !important;
+  border-color: var(--surface-border) !important;
+}
+
+:root.dark .p-menuitem-icon,
+:root.dark .p-panelmenu-icon,
+:root.dark .pi {
+  color: var(--text-color) !important;
+}
+
+:root.dark .p-menuitem-link:hover,
+:root.dark .p-panelmenu-header-link:hover,
+:root.dark .p-component:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+/* Force la couleur de fond des panneaux PrimeVue */
+:root.dark .p-sidebar {
+  background-color: #1e1e1e !important;
+}
+
+:root.dark .p-panelmenu-panel,
+:root.dark .p-panelmenu-header,
+:root.dark .p-panelmenu-content,
+:root.dark .p-menu-overlay {
+  background-color: #1e1e1e !important;
 }
 
 /* Styles pour le nouveau menu moderne */
