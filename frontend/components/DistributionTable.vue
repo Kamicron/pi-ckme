@@ -3,15 +3,8 @@
     <h2>Distribution</h2>
     <div class="mb-3">
       <span class="p-float-label">
-        <Dropdown
-          v-model="selectedNationality"
-          :options="nationalities"
-          optionLabel="nameFr"
-          :filter="true"
-          :showClear="true"
-          class="w-full"
-          @change="$emit('nationalityChange', selectedNationality?.id)"
-        >
+        <Dropdown v-model="selectedNationality" :options="nationalities" optionLabel="nameFr" :filter="true"
+          :showClear="true" class="w-full" @change="$emit('nationalityChange', selectedNationality?.id)">
           <template #value="slotProps">
             <div v-if="slotProps.value">{{ slotProps.value.nameFr }}</div>
             <span v-else>Sélectionnez une nationalité</span>
@@ -24,17 +17,17 @@
       </span>
     </div>
     <DataTable :value="distribution" :loading="loading" stripedRows>
+      <Column header="Taux Total">
+        <template #body="slotProps">
+          <strong>{{ getTotalPercentage(slotProps.data.ethnicities) }}%</strong>
+        </template>
+      </Column>
       <Column field="nameFr" header="Nationalité"></Column>
       <Column field="ethnicities" header="Ethnicités">
         <template #body="slotProps">
           <div class="ethnicities-container">
-            <Chip 
-              v-for="eth in slotProps.data.ethnicities" 
-              :key="eth.id"
-              :label="`${eth.nameFr} (${eth.percentage}%)`"
-              :style="getEthnicityStyle(eth.id)"
-              class="mr-2 mb-2"
-            />
+            <Chip v-for="eth in slotProps.data.ethnicities" :key="eth.id" :label="`${eth.nameFr} (${eth.percentage}%)`"
+              :style="getEthnicityStyle(eth.id)" class="mr-2 mb-2" />
           </div>
         </template>
       </Column>
@@ -79,6 +72,11 @@ defineEmits<{
 
 function getEthnicityStyle(ethnicityId: string): EthnicityStyle {
   return props.ethnicityColorMap.get(ethnicityId) || { backgroundColor: '#E0E0E0', color: '#000000' };
+}
+
+function getTotalPercentage(ethnicities?: Ethnicity[]): number {
+  if (!ethnicities || ethnicities.length === 0) return 0;
+  return ethnicities.reduce((sum, eth) => sum + eth.percentage, 0);
 }
 </script>
 
