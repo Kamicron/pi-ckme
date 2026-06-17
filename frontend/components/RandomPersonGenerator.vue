@@ -35,6 +35,9 @@
         </div>
         <div class="person-name">
           <h2>{{ person.firstName }} {{ person.lastName }}</h2>
+          <div v-if="person.nickname" class="person-nickname">
+            <Tag icon="pi pi-user" severity="info" :value="person.nickname" class="nickname-tag" />
+          </div>
         </div>
       </div>
       <div class="details-section">
@@ -64,6 +67,49 @@
               :label="person.ethnicity.nameFr"
               :style="getEthnicityStyle(person.ethnicity.id)"
             />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Métadonnées du nickname -->
+      <div v-if="person.nicknameMeta" class="nickname-meta-section">
+        <h4>Détails du pseudo</h4>
+        <div class="detail-row">
+          <div class="detail-label">Style:</div>
+          <div class="detail-value">
+            <Tag :value="person.nicknameMeta.style" severity="secondary" class="meta-tag" />
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Pattern:</div>
+          <div class="detail-value">
+            <Tag :value="person.nicknameMeta.pattern" severity="warning" class="meta-tag" />
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Transformations:</div>
+          <div class="detail-value">
+            <Tag 
+              v-for="(t, i) in person.nicknameMeta.transformations" 
+              :key="i"
+              :value="t" 
+              severity="success" 
+              class="meta-tag transformation-tag"
+            />
+            <span v-if="!person.nicknameMeta.transformations.length" class="no-transform">-</span>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Lisibilité:</div>
+          <div class="detail-value">
+            <div class="readability-bar">
+              <div 
+                class="readability-fill" 
+                :style="{ width: person.nicknameMeta.readability + '%' }"
+                :class="getReadabilityClass(person.nicknameMeta.readability)"
+              ></div>
+              <span class="readability-text">{{ person.nicknameMeta.readability }}%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -146,6 +192,12 @@ function formatGender(gender: string): string {
 
 function getEthnicityStyle(ethnicityId: string) {
   return props.ethnicityColorMap.get(ethnicityId) || { backgroundColor: '#E0E0E0', color: '#000000' }
+}
+
+function getReadabilityClass(readability: number): string {
+  if (readability >= 70) return 'readability-high';
+  if (readability >= 40) return 'readability-medium';
+  return 'readability-low';
 }
 
 async function generatePerson() {
@@ -265,6 +317,15 @@ async function generatePerson() {
   color: var(--text-color);
 }
 
+.person-nickname {
+  margin-top: 0.5rem;
+}
+
+.nickname-tag {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
 .details-section {
   display: flex;
   flex-direction: column;
@@ -307,5 +368,88 @@ async function generatePerson() {
 
 .error-state {
   color: var(--red-500);
+}
+
+.nickname-meta-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--surface-border);
+}
+
+.nickname-meta-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.meta-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:deep(.p-tag) {
+  color: var(--text-color) !important;
+}
+
+:deep(.p-tag.p-tag-warning) {
+  background: var(--orange-100) !important;
+  color: var(--orange-900) !important;
+}
+
+:deep(.p-tag.p-tag-secondary) {
+  background: var(--surface-200) !important;
+  color: var(--text-color) !important;
+}
+
+:deep(.p-tag.p-tag-success) {
+  background: var(--green-100) !important;
+  color: var(--green-900) !important;
+}
+
+:deep(.p-tag.p-tag-info) {
+  background: var(--blue-100) !important;
+  color: var(--blue-900) !important;
+}
+
+.transformation-tag {
+  margin-right: 0.25rem;
+}
+
+.no-transform {
+  color: var(--text-color-secondary);
+  font-style: italic;
+}
+
+.readability-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 150px;
+}
+
+.readability-fill {
+  height: 8px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.readability-high {
+  background-color: var(--green-500);
+}
+
+.readability-medium {
+  background-color: var(--yellow-500);
+}
+
+.readability-low {
+  background-color: var(--red-500);
+}
+
+.readability-text {
+  font-size: 0.8rem;
+  color: var(--text-color-secondary);
+  min-width: 35px;
 }
 </style>

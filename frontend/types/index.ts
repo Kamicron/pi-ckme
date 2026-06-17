@@ -14,4 +14,11 @@ export interface Person {
     nameFr: string;
   };
   photoUrl?: string;
+  nickname: string;
+  nicknameMeta?: {
+    style: string;
+    pattern: string;
+    transformations: string[];
+    readability: number;
+  };
 }

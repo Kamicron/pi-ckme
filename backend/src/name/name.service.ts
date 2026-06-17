@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { FirstName } from '../first-name/entities/first-name.entity';
 import { LastName } from '../last-name/entities/last-name.entity';
 import { NationalityService } from '../nationality/nationality.service';
+import { NicknameService } from '../nickname/nickname.service';
 
 type Gender = 'male' | 'female';
 
@@ -17,6 +18,7 @@ export class NameService {
     @InjectRepository(LastName)
     private readonly lastNameRepository: Repository<LastName>,
     private readonly nationalityService: NationalityService,
+    private readonly nicknameService: NicknameService,
   ) {}
 
   async getRandomPerson(options?: {
@@ -106,6 +108,12 @@ export class NameService {
 
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
 
+      // Generate nickname based on first and last name
+      const nicknameResult = await this.nicknameService.generateNickname({
+        firstName: firstName.name,
+        lastName: lastName.name,
+      });
+
       return {
         nationality: {
           id: randomNationality.id,
@@ -118,6 +126,13 @@ export class NameService {
         gender,
         firstName: firstName.name,
         lastName: lastName.name,
+        nickname: nicknameResult.nickname,
+        nicknameMeta: {
+          style: nicknameResult.style,
+          pattern: nicknameResult.pattern,
+          transformations: nicknameResult.transformations,
+          readability: nicknameResult.readability,
+        },
       };
     } catch (error) {
       this.logger.error(`Error generating person: ${error.message}`);

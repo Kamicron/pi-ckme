@@ -18,6 +18,14 @@ import { NationalityModule } from './nationality/nationality.module';
 import { PhotoFolderModule } from './photo-folder/photo-folder.module';
 import { NationalityEthnicityDistribution } from './nationality/entities/nationality-ethnicity-distribution.entity';
 import { NameModule } from './name/name.module';
+import { NicknameModule } from './nickname/nickname.module';
+import {
+  NicknameFragment,
+  NicknameStyle,
+  NicknamePattern,
+  NicknameTransformation,
+  NicknameBlacklist,
+} from './nickname/entities';
 
 @Module({
   imports: [
@@ -31,7 +39,10 @@ import { NameModule } from './name/name.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Ethnicity, FirstName, LastName, Nationality, PhotoFolder, NationalityEthnicityDistribution],
+      entities: [
+        User, Ethnicity, FirstName, LastName, Nationality, PhotoFolder, NationalityEthnicityDistribution,
+        NicknameFragment, NicknameStyle, NicknamePattern, NicknameTransformation, NicknameBlacklist,
+      ],
       synchronize: false, // Désactivé pour éviter les conflits avec la base existante
     }),
     AuthModule,
@@ -42,6 +53,7 @@ import { NameModule } from './name/name.module';
     NationalityModule,
     PhotoFolderModule,
     NameModule,
+    NicknameModule,
   ],
   controllers: [AppController],
   providers: [AppService],
