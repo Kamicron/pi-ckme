@@ -6,6 +6,7 @@ import { LastName } from '../last-name/entities/last-name.entity';
 import { NationalityService } from '../nationality/nationality.service';
 import { NicknameService } from '../nickname/nickname.service';
 import { PortraitGeneratorService } from './portrait-generator.service';
+import { ImageUploadService } from '../image-upload/image-upload.service';
 
 type Gender = 'male' | 'female';
 
@@ -21,6 +22,7 @@ export class NameService {
     private readonly nationalityService: NationalityService,
     private readonly nicknameService: NicknameService,
     private readonly portraitGenerator: PortraitGeneratorService,
+    private readonly imageUploadService: ImageUploadService,
   ) {}
 
   async getRandomPerson(options?: {
@@ -119,6 +121,13 @@ export class NameService {
       // Generate portrait attributes based on ethnicity and gender
       const portrait = this.portraitGenerator.generatePortrait(ethnicity.nameFr, gender);
 
+      // Try to get a random photo from the image service
+      const photoUrl = await this.imageUploadService.getRandomImageForPerson(
+        gender,
+        ethnicity.nameFr,
+        'medium'
+      );
+
       return {
         nationality: {
           id: randomNationality.id,
@@ -142,6 +151,7 @@ export class NameService {
           prompt: portrait.prompt,
           attributes: portrait.attributes,
         },
+        photoUrl,
       };
     } catch (error) {
       this.logger.error(`Error generating person: ${error.message}`);
