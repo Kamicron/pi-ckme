@@ -19,6 +19,7 @@ import { PhotoFolderModule } from './photo-folder/photo-folder.module';
 import { NationalityEthnicityDistribution } from './nationality/entities/nationality-ethnicity-distribution.entity';
 import { NameModule } from './name/name.module';
 import { NicknameModule } from './nickname/nickname.module';
+import { ImageUploadModule } from './image-upload/image-upload.module';
 import {
   NicknameFragment,
   NicknameStyle,
@@ -54,6 +55,7 @@ import {
     PhotoFolderModule,
     NameModule,
     NicknameModule,
+    ImageUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
