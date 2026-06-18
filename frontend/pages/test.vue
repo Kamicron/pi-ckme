@@ -4,11 +4,16 @@
     <div class="grid">
       <!-- Générateur de personnes aléatoires -->
       <div class="col-12">
-        <RandomPersonGenerator :ethnicity-color-map="ethnicityColorMap" />
+        <RandomPersonGenerator :ethnicity-color-map="ethnicityColorMap" @person-generated="onPersonGenerated" />
+      </div>
+
+      <!-- Upload d'images IA -->
+      <div class="col-12 md:col-6">
+        <ImageUploader :prefill-sex="lastGeneratedSex" :prefill-ethnicity="lastGeneratedEthnicity" />
       </div>
 
       <!-- Statistiques des combinaisons -->
-      <div class="col-12">
+      <div class="col-12 md:col-6">
         <PossibleCombinations />
       </div>
       <!-- Liste des ethnicités -->
@@ -37,6 +42,16 @@ import EthnicitiesTable from '~/components/EthnicitiesTable.vue'
 import NationalitiesTable from '~/components/NationalitiesTable.vue'
 import DistributionTable from '~/components/DistributionTable.vue'
 import RandomPersonGenerator from '~/components/RandomPersonGenerator.vue'
+import ImageUploader from '~/components/ImageUploader.vue'
+import type { Person } from '~/types'
+
+const lastGeneratedSex = ref<string | null>(null)
+const lastGeneratedEthnicity = ref<string | null>(null)
+
+function onPersonGenerated(person: Person) {
+  lastGeneratedSex.value = person.gender
+  lastGeneratedEthnicity.value = person.ethnicity?.nameFr || null
+}
 
 interface Ethnicity {
   id: string;
