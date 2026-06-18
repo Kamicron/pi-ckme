@@ -30,8 +30,9 @@
     
     <div class="person-details" v-if="person">
       <div class="person-header">
-        <div class="person-photo">
+        <div class="person-photo" :class="{ 'has-photo': person.photoUrl }">
           <img v-if="person.photoUrl" :src="person.photoUrl" :alt="person.firstName" />
+          <i v-else class="pi pi-user placeholder-icon"></i>
         </div>
         <div class="person-name">
           <h2>{{ person.firstName }} {{ person.lastName }}</h2>
@@ -180,6 +181,9 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+const emit = defineEmits<{
+  (e: 'person-generated', person: Person): void;
+}>();
 const { getFlagUrl } = useFlags()
 const person = ref<Person | null>(null)
 const loading = ref(false)
@@ -324,6 +328,9 @@ async function generatePerson() {
     }
     
     person.value = await response.json();
+    if (person.value) {
+      emit('person-generated', person.value);
+    }
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Une erreur est survenue';
     person.value = null;
@@ -390,16 +397,32 @@ async function generatePerson() {
 }
 
 .person-photo {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
+  min-width: 120px;
   border-radius: 50%;
   overflow: hidden;
+  background: var(--surface-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--surface-border);
+}
+
+.person-photo.has-photo {
+  border-color: var(--primary-color);
 }
 
 .person-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  color: var(--text-color-secondary);
+  opacity: 0.5;
 }
 
 .person-name h2 {
