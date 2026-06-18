@@ -1,3 +1,17 @@
+export interface PortraitAttributes {
+  faceShape: string;
+  gender: string;
+  hairStyle: string;
+  featureVariation: string;
+  skinTone: string;
+  tshirtColor: string;
+}
+
+export interface Portrait {
+  prompt: string;
+  attributes: PortraitAttributes;
+}
+
 export interface Person {
   firstName: string;
   lastName: string;
@@ -21,4 +35,5 @@ export interface Person {
     transformations: string[];
     readability: number;
   };
+  portrait?: Portrait;
 }

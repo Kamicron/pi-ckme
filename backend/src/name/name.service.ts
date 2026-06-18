@@ -5,6 +5,7 @@ import { FirstName } from '../first-name/entities/first-name.entity';
 import { LastName } from '../last-name/entities/last-name.entity';
 import { NationalityService } from '../nationality/nationality.service';
 import { NicknameService } from '../nickname/nickname.service';
+import { PortraitGeneratorService } from './portrait-generator.service';
 
 type Gender = 'male' | 'female';
 
@@ -19,6 +20,7 @@ export class NameService {
     private readonly lastNameRepository: Repository<LastName>,
     private readonly nationalityService: NationalityService,
     private readonly nicknameService: NicknameService,
+    private readonly portraitGenerator: PortraitGeneratorService,
   ) {}
 
   async getRandomPerson(options?: {
@@ -114,6 +116,9 @@ export class NameService {
         lastName: lastName.name,
       });
 
+      // Generate portrait attributes based on ethnicity and gender
+      const portrait = this.portraitGenerator.generatePortrait(ethnicity.nameFr, gender);
+
       return {
         nationality: {
           id: randomNationality.id,
@@ -132,6 +137,10 @@ export class NameService {
           pattern: nicknameResult.pattern,
           transformations: nicknameResult.transformations,
           readability: nicknameResult.readability,
+        },
+        portrait: {
+          prompt: portrait.prompt,
+          attributes: portrait.attributes,
         },
       };
     } catch (error) {

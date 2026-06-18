@@ -113,6 +113,53 @@
           </div>
         </div>
       </div>
+      
+      <!-- Portrait Prompt -->
+      <div v-if="person.portrait" class="portrait-section">
+        <h4>Prompt Portrait</h4>
+        <div class="detail-row">
+          <div class="detail-label">Forme:</div>
+          <div class="detail-value">{{ person.portrait.attributes.faceShape }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Peau:</div>
+          <div class="detail-value">
+            <span class="skin-tone-badge" :style="getSkinToneStyle(person.portrait.attributes.skinTone)">
+              {{ person.portrait.attributes.skinTone }}
+            </span>
+          </div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Cheveux:</div>
+          <div class="detail-value">{{ person.portrait.attributes.hairStyle }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Features:</div>
+          <div class="detail-value">{{ person.portrait.attributes.featureVariation }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">T-shirt:</div>
+          <div class="detail-value">
+            <span class="tshirt-badge" :style="{ backgroundColor: getTshirtColorHex(person.portrait.attributes.tshirtColor) }">
+              {{ person.portrait.attributes.tshirtColor }}
+            </span>
+          </div>
+        </div>
+        <div class="prompt-box">
+          <div class="prompt-header">
+            <span>Prompt complet</span>
+            <Button 
+              icon="pi pi-copy" 
+              severity="secondary" 
+              text 
+              size="small"
+              @click="copyPrompt(person.portrait.prompt)"
+              title="Copier le prompt"
+            />
+          </div>
+          <pre class="prompt-text">{{ person.portrait.prompt }}</pre>
+        </div>
+      </div>
     </div>
     <div v-else-if="loading" class="loading-state">
       Chargement...
@@ -198,6 +245,50 @@ function getReadabilityClass(readability: number): string {
   if (readability >= 70) return 'readability-high';
   if (readability >= 40) return 'readability-medium';
   return 'readability-low';
+}
+
+function getSkinToneStyle(skinTone: string): Record<string, string> {
+  const tone = skinTone.toLowerCase();
+  if (tone.includes('fair') || tone.includes('porcelain') || tone.includes('light')) {
+    return { backgroundColor: '#F5D5C0', color: '#5A3A2A' };
+  }
+  if (tone.includes('deep') || tone.includes('dark') || tone.includes('ebony')) {
+    return { backgroundColor: '#5D3A1A', color: '#FFFFFF' };
+  }
+  if (tone.includes('olive') || tone.includes('tan')) {
+    return { backgroundColor: '#C4956A', color: '#3D2914' };
+  }
+  if (tone.includes('brown') || tone.includes('bronze')) {
+    return { backgroundColor: '#8B5A3C', color: '#FFFFFF' };
+  }
+  return { backgroundColor: '#D4A574', color: '#4A3018' };
+}
+
+function getTshirtColorHex(colorName: string): string {
+  const colorMap: Record<string, string> = {
+    'navy blue': '#1E3A5F',
+    'dark gray': '#4A4A4A',
+    'forest green': '#228B22',
+    'burgundy': '#800020',
+    'black': '#1A1A1A',
+    'white': '#F5F5F5',
+    'olive green': '#556B2F',
+    'charcoal': '#36454F',
+    'dark teal': '#014D4E',
+    'brown': '#654321',
+    'beige': '#F5F5DC',
+    'dark blue': '#00008B',
+  };
+  return colorMap[colorName.toLowerCase()] || '#808080';
+}
+
+async function copyPrompt(prompt: string) {
+  try {
+    await navigator.clipboard.writeText(prompt);
+    // Could add a toast notification here
+  } catch (err) {
+    console.error('Failed to copy:', err);
+  }
 }
 
 async function generatePerson() {
@@ -451,5 +542,68 @@ async function generatePerson() {
   font-size: 0.8rem;
   color: var(--text-color-secondary);
   min-width: 35px;
+}
+
+/* Portrait Section */
+.portrait-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--surface-border);
+}
+
+.portrait-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skin-tone-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.tshirt-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.prompt-box {
+  margin-top: 1rem;
+  background: var(--surface-100);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.prompt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-200);
+  border-bottom: 1px solid var(--surface-border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color-secondary);
+}
+
+.prompt-text {
+  padding: 0.75rem;
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-color);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: monospace;
 }
 </style>

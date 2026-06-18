@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NameController } from './name.controller';
 import { NameService } from './name.service';
+import { PortraitGeneratorService } from './portrait-generator.service';
 import { FirstName } from '../first-name/entities/first-name.entity';
 import { LastName } from '../last-name/entities/last-name.entity';
 import { NationalityModule } from '../nationality/nationality.module';
@@ -14,7 +15,7 @@ import { NicknameModule } from '../nickname/nickname.module';
     NicknameModule
   ],
   controllers: [NameController],
-  providers: [NameService],
+  providers: [NameService, PortraitGeneratorService],
   exports: [NameService]
 })
 export class NameModule {}
