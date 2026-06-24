@@ -44,6 +44,8 @@ import DistributionTable from '~/components/DistributionTable.vue'
 import RandomPersonGenerator from '~/components/RandomPersonGenerator.vue'
 import ImageUploader from '~/components/ImageUploader.vue'
 import type { Person } from '~/types'
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBaseUrl
 
 const lastGeneratedSex = ref<string | null>(null)
 const lastGeneratedEthnicity = ref<string | null>(null)
@@ -125,7 +127,7 @@ function assignColorsToEthnicities(ethnicitiesList: Ethnicity[]): void {
 async function fetchDistribution(nationalityId?: string) {
   try {
     loading.value = true
-    const url = new URL('http://localhost:5001/nationalities/distribution')
+    const url = new URL(`${apiBase}/nationalities/distribution`)
     if (nationalityId) {
       url.searchParams.append('nationalityId', nationalityId)
     }
@@ -146,8 +148,8 @@ async function fetchData() {
   try {
     loading.value = true
     const [ethnicitiesRes, nationalitiesRes] = await Promise.all([
-      fetch('http://localhost:5001/ethnicities').then(res => res.json()),
-      fetch('http://localhost:5001/nationalities').then(res => res.json())
+      fetch(`${apiBase}/ethnicities`).then(res => res.json()),
+      fetch(`${apiBase}/nationalities`).then(res => res.json())
     ])
 
     ethnicities.value = ethnicitiesRes

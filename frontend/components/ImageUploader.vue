@@ -88,6 +88,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBaseUrl
 
 interface Props {
   prefillSex?: string | null;
@@ -146,7 +148,7 @@ onMounted(async () => {
 async function loadEthnicities() {
   loadingEthnicities.value = true;
   try {
-    const response = await fetch('http://localhost:5001/ethnicities');
+    const response = await fetch(`${apiBase}/ethnicities`);
     const ethnicities = await response.json();
     ethnicityOptions.value = ethnicities.map((eth: any) => ({
       label: eth.nameFr,
@@ -190,7 +192,7 @@ async function uploadImage() {
     formData.append('ethnicity', selectedEthnicity.value!);
     formData.append('fileName', selectedFile.value!.name);
 
-    const response = await fetch('http://localhost:5001/images/upload', {
+    const response = await fetch(`${apiBase}/images/upload`, {
       method: 'POST',
       body: formData,
     });

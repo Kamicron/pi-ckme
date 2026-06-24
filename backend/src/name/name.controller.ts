@@ -17,4 +17,19 @@ export class NameController {
       ethnicityId,
     });
   }
+
+  @Get('random-persons')
+  getRandomPersons(
+    @Query('count') count?: string,
+    @Query('gender') gender?: 'male' | 'female',
+    @Query('nationalityId') nationalityId?: string,
+    @Query('ethnicityId') ethnicityId?: string,
+  ) {
+    const n = Math.min(Math.max(parseInt(count || '1', 10) || 1, 1), 50);
+    return Promise.all(
+      Array.from({ length: n }, () =>
+        this.nameService.getRandomPerson({ gender, nationalityId, ethnicityId }),
+      ),
+    );
+  }
 }

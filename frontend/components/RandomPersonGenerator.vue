@@ -131,8 +131,20 @@
           </div>
         </div>
         <div class="detail-row">
+          <div class="detail-label">Couleur:</div>
+          <div class="detail-value">{{ person.portrait.attributes.hairColor }}</div>
+        </div>
+        <div class="detail-row">
           <div class="detail-label">Cheveux:</div>
           <div class="detail-value">{{ person.portrait.attributes.hairStyle }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Yeux:</div>
+          <div class="detail-value">{{ person.portrait.attributes.eyeShape }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Traits ethniques:</div>
+          <div class="detail-value">{{ person.portrait.attributes.ethnicFeatures }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">Features:</div>
@@ -175,6 +187,8 @@
 import { ref, computed } from 'vue'
 import type { Person } from '~/types'
 import { useFlags } from '~/composables/useFlags'
+const config = useRuntimeConfig()
+const apiBase = config.public.apiBaseUrl
 
 interface Props {
   ethnicityColorMap: Map<string, { backgroundColor: string; color: string; }>;
@@ -207,7 +221,7 @@ const ethnicityOptions = ref<Array<{ label: string, value: string }>>([]);
 onMounted(async () => {
   try {
     // Charger les nationalités
-    const nationalitiesResponse = await fetch('http://localhost:5001/nationalities');
+    const nationalitiesResponse = await fetch(`${apiBase}/nationalities`);
     const nationalities = await nationalitiesResponse.json();
     nationalityOptions.value = nationalities.map((nat: any) => ({
       label: nat.nameFr,
@@ -215,7 +229,7 @@ onMounted(async () => {
     }));
     
     // Charger toutes les ethnicités disponibles
-    const ethnicitiesResponse = await fetch('http://localhost:5001/ethnicities');
+    const ethnicitiesResponse = await fetch(`${apiBase}/ethnicities`);
     const ethnicities = await ethnicitiesResponse.json();
     ethnicityOptions.value = ethnicities.map((eth: any) => ({
       label: eth.nameFr,
@@ -301,7 +315,7 @@ async function generatePerson() {
     error.value = null;
     
     // Construire l'URL avec les paramètres de filtre
-    let url = 'http://localhost:5001/names/random-person';
+    let url = `${apiBase}/names/random-person`;
     const params = new URLSearchParams();
     
     if (selectedGender.value) {

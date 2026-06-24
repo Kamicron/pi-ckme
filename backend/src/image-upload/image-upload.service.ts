@@ -72,7 +72,7 @@ export class ImageUploadService {
         `${this.apiUrl}/files?albumId=${albumId}&size=1000`,
         {
           headers: {
-            'Authorization': `Bearer ${this.apiToken}`,
+            'X-API-Key': this.apiToken,
           },
         }
       );
@@ -130,11 +130,15 @@ export class ImageUploadService {
     fileName?: string
   ): Promise<UploadResult> {
     try {
+      this.logger.log(`uploadImage: sex=${sex}, ethnicity=${ethnicity}, file=${file?.originalname}, size=${file?.size}`);
+
       // Get or create album path
       const albumId = await this.getOrCreateAlbumPath(sex, ethnicity);
+      this.logger.log(`uploadImage: albumId=${albumId}`);
 
       // Get next available filename number for this album
       const uniqueFileName = await this.generateNextFilename(albumId, file.originalname);
+      this.logger.log(`uploadImage: uniqueFileName=${uniqueFileName}`);
 
       // Create FormData
       const formData = new FormData();
@@ -142,14 +146,18 @@ export class ImageUploadService {
       formData.append('file', blob, uniqueFileName);
       formData.append('albumId', albumId.toString());
 
+      this.logger.log(`uploadImage: sending to ${this.apiUrl}/files/upload`);
+
       // Upload to external API
       const response = await fetch(`${this.apiUrl}/files/upload`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
+          'X-API-Key': this.apiToken,
         },
         body: formData,
       });
+
+      this.logger.log(`uploadImage: response status=${response.status}`);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -157,6 +165,7 @@ export class ImageUploadService {
       }
 
       const result = await response.json();
+      this.logger.log(`uploadImage: result=${JSON.stringify(result)}`);
 
       // Make file public
       await this.setFilePublic(result.id, true);
@@ -237,7 +246,7 @@ export class ImageUploadService {
     try {
       const response = await fetch(`${this.apiUrl}/albums`, {
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
+          'X-API-Key': this.apiToken,
         },
       });
 
@@ -245,7 +254,8 @@ export class ImageUploadService {
         throw new Error(`Failed to list albums: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : (data.value || []);
     } catch (error) {
       this.logger.error(`Failed to list albums: ${error.message}`);
       return [];
@@ -259,7 +269,7 @@ export class ImageUploadService {
     try {
       const response = await fetch(`${this.apiUrl}/albums/${albumId}/children`, {
         headers: {
-          'Authorization': `Bearer ${this.apiToken}`,
+          'X-API-Key': this.apiToken,
         },
       });
 
@@ -267,7 +277,8 @@ export class ImageUploadService {
         throw new Error(`Failed to get album children: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      return Array.isArray(data) ? data : (data.value || []);
     } catch (error) {
       this.logger.error(`Failed to get album children: ${error.message}`);
       return [];
@@ -281,7 +292,7 @@ export class ImageUploadService {
     const response = await fetch(`${this.apiUrl}/albums`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiToken}`,
+        'X-API-Key': this.apiToken,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -309,7 +320,7 @@ export class ImageUploadService {
         {
           method: 'PATCH',
           headers: {
-            'Authorization': `Bearer ${this.apiToken}`,
+            'X-API-Key': this.apiToken,
           },
         }
       );

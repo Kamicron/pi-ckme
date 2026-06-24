@@ -2,6 +2,9 @@ export interface PortraitAttributes {
   faceShape: string;
   gender: string;
   hairStyle: string;
+  hairColor: string;
+  eyeShape: string;
+  ethnicFeatures: string;
   featureVariation: string;
   skinTone: string;
   tshirtColor: string;

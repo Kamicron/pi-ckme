@@ -42,12 +42,17 @@ export class ImageUploadController {
       throw new BadRequestException('Sex and ethnicity are required');
     }
 
-    const result = await this.imageUploadService.uploadImage(
-      file,
-      body.sex,
-      body.ethnicity,
-      body.fileName,
-    );
+    let result;
+    try {
+      result = await this.imageUploadService.uploadImage(
+        file,
+        body.sex,
+        body.ethnicity,
+        body.fileName,
+      );
+    } catch (err) {
+      throw new BadRequestException(err.message || 'Upload error');
+    }
 
     if (!result.success) {
       throw new BadRequestException(result.error);

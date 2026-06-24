@@ -6,11 +6,27 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // Configuration CORS
-  const frontUrl = process.env.FRONT_URL?.replace(/\/$/, '') || 'http://localhost:3001';
+  const frontUrl = process.env.FRONT_URL?.replace(/\/$/, '') || 'http://localhost:3000';
   console.log('FRONT_URL:', frontUrl);
 
+  const allowedOrigins = [
+    frontUrl,
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    'http://localhost:4000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+  ];
+
   app.enableCors({
-    origin: frontUrl,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
