@@ -29,6 +29,8 @@ export class NameService {
     gender?: Gender;
     nationalityId?: string;
     ethnicityId?: string;
+    includePrompt?: boolean;
+    lite?: boolean;
   }) {
     // 1. Get all nationalities and pick one randomly if not specified
     const nationalities = await this.nationalityService.findAll();
@@ -128,7 +130,7 @@ export class NameService {
         'medium'
       );
 
-      return {
+      const base = {
         nationality: {
           id: randomNationality.id,
           nameFr: randomNationality.nameFr,
@@ -141,6 +143,15 @@ export class NameService {
         firstName: firstName.name,
         lastName: lastName.name,
         nickname: nicknameResult.nickname,
+        photoUrl,
+      };
+
+      if (options?.lite) {
+        return base;
+      }
+
+      return {
+        ...base,
         nicknameMeta: {
           style: nicknameResult.style,
           pattern: nicknameResult.pattern,
@@ -148,10 +159,9 @@ export class NameService {
           readability: nicknameResult.readability,
         },
         portrait: {
-          prompt: portrait.prompt,
+          ...(options?.includePrompt !== false && { prompt: portrait.prompt }),
           attributes: portrait.attributes,
         },
-        photoUrl,
       };
     } catch (error) {
       this.logger.error(`Error generating person: ${error.message}`);
